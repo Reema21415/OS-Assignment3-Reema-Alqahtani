@@ -121,8 +121,13 @@ class Process implements Runnable {
     public void run() {
         // TODO #3: Acquire CPU semaphore before executing
         // This ensures only allowed number of processes run simultaneously
+        boolean acquired = false;
 
         try {
+            // Acquire CPU access before execution
+            SharedResources.cpuSemaphore.acquire();
+            acquired = true;
+
             if (startTime == -1) {
                 startTime = System.currentTimeMillis();
             }
@@ -180,8 +185,12 @@ class Process implements Runnable {
                         Colors.RESET);
             }
             System.out.println();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println(Colors.RED + "  ✗ " + name + " could not acquire CPU access." + Colors.RESET);
+        }
 
-        } finally {
+        finally {
             // TODO #4: Release CPU semaphore here
             // Always release in finally block to prevent deadlocks!
         }

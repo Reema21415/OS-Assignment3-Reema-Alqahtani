@@ -1,6 +1,6 @@
 # Assignment 3 - Complete Documentation
 
-**Student Name**: [Reema Saeed Alqahtani]  
+**Student Name**: Reema Saeed Alqahtani 
 **Student ID**: 445052064 
 **Date Submitted**: May 7, 2026
 
@@ -14,16 +14,16 @@
 > Set sharing to "Anyone with the link can view".
 > Test the link in incognito/private mode before submitting.
 
-**Video Link**: [Paste your personal Gmail Google Drive link here]
+**Video Link**: https://drive.google.com/file/d/13ycqQQnds6nv_kGskf9vQKtQYFuuo9dG/view?usp=drive_link
 
 **Video filename**: `445052064_Assignment3_Synchronization.mp4`
 
 **Verification**:
-- [ ] Link is accessible (tested in incognito mode)
-- [ ] Video is 3-5 minutes long
-- [ ] Video shows code walkthrough and commits
-- [ ] Video has clear audio
-- [ ] Uploaded to PERSONAL Gmail (not @std.psau.edu.sa)
+- [x] Link is accessible (tested in incognito mode)
+- [x] Video is 3-5 minutes long
+- [x] Video shows code walkthrough and commits
+- [x] Video has clear audio
+- [x] Uploaded to PERSONAL Gmail (not @std.psau.edu.sa)
 
 ---
 
@@ -31,69 +31,88 @@
 
 Document your development process with **minimum 3 entries** showing progression:
 
-### Entry 1 - [May 6, 2026, 6:30 PM]
+### Entry 1 - May 6, 2026, 6:30 PM
 **What I implemented**: 
 I started the project in Visual Studio Code, adjusted the student ID in `SchedulerSimulationSync.java`, examined the assignment criteria, then forked and cloned the starting repository.
+
 **Challenges encountered**: 
 Initially, I had to figure out which resources are shared by threads and comprehend how the scheduling simulation functions.
+
 **How I solved it**: 
 After looking into the `SharedResources` class, I found that the shared resources that need to be synchronized are `contextSwitchCount`, `completedProcessCount`, `totalWaitingTime`, and `executionLog`.
+
 **Testing approach**: 
 Before implementing synchronization, I made sure the scheduler simulation was functioning by compiling and running the original application.
 **Time spent**: 
 About 40 minutes.
 ---
 
-### Entry 2 - [May 7, 2026, 03:00 PM]
+### Entry 2 - May 7, 2026, 03:00 PM
 **What I implemented**: 
 I included the synchronization imports for Semaphore and ReentrantLock. In the `SharedResources` class, I also built `counterLock`, `logLock`, and `cpuSemaphore`.
+
 **Challenges encountered**: 
 Choosing how to set up synchronization for counters and logs was the difficult part.
+
 **How I solved it**: 
 To keep synchronization duties clear, I utilized a single shared lock for the counter variables and a different lock for the execution log.
+
 **Testing approach**: 
 I verified that the imports were appropriately built and that the creation of `new Semaphore(1)` was successful.
+
 **Time spent**: 
 About 35 minutes.
 ---
 
-### Entry 3 - [May 7, 2026, 04:20 PM]
+### Entry 3 - May 7, 2026, 04:20 PM
 **What I implemented**: 
 I used `counterLock` to safeguard the shared counter methods. `incrementContextSwitch()`, `incrementCompletedProcess()`, and `addWaitingTime(long time)` were the protected methods.
+
 **Challenges encountered**: 
 To prevent deadlock, I had to make sure that every lock acquisition had a guaranteed release.
+
 **How I solved it**: 
 In each counter technique, I employed `try-finally` blocks. This ensures that even in the event of an exception, the lock will be released.
+
 **Testing approach**: 
 I thoroughly examined every synchronized function, making sure that each call to `lock()` had a corresponding call to `unlock()` inside of `finally`.
+
 **Time spent**: 
 About 30 minutes.
 
 ---
 
-### Entry 4 - [May 7, 2026, 05:30 PM]
+### Entry 4 - May 7, 2026, 05:30 PM
 **What I implemented**: 
 In the `logExecution(String message)` function, I used `logLock` to safeguard the `executionLog` list.
+
 **Challenges encountered**: 
 The `ArrayList` used in the execution log is not thread-safe when accessed concurrently by several threads.
+
 **How I solved it**: 
 To ensure exclusive access when adding log entries, I employed a different `ReentrantLock` named `logLock`.
+
 **Testing approach**: 
 I confirmed that the synchronized `logExecution()` function is the only way to update `executionLog`.
+
 **Time spent**: 
 About 20 minutes.
 
 ---
 
-### Entry 5 - [May 7, 2026, 06:40 PM]
+### Entry 5 - May 7, 2026, 06:40 PM
 **What I implemented**: 
 Semaphore synchronization was incorporated into the `run()` function. The CPU semaphore is now acquired by each process before to execution and released in a `finally` block.
+
 **Challenges encountered**: 
 Correctly handling `InterruptedException` and ensuring that the semaphore is released only after it has been successfully obtained was a problem.
+
 **How I solved it**: 
 Before executing `release()`, I introduced a boolean variable named `acquired` and utilized it within the `finally` section.
+
 **Testing approach**: 
 After implementing semaphore synchronization, I examined the scheduler's execution to make sure the software continued to run all processes appropriately.
+
 **Time spent**: 
 About 1 hour.
 
@@ -118,7 +137,7 @@ try {
 } finally {
     counterLock.unlock();
 }
-
+```
 
 ---
 
@@ -132,7 +151,7 @@ ReentrantLock ensures mutual exclusion between threads and protects important pa
 ```java
 public static final ReentrantLock counterLock = new ReentrantLock();
 public static final Semaphore cpuSemaphore = new Semaphore(1);
-
+```
 
 ---
 
@@ -149,7 +168,7 @@ finally {
         SharedResources.cpuSemaphore.release();
     }
 }
-
+```
 
 ---
 
@@ -166,7 +185,7 @@ I used one shared lock called `counterLock` for the three counter variables, so 
 
 ```java
 public static final ReentrantLock counterLock = new ReentrantLock();
-
+```
 
 ---
 
@@ -298,6 +317,8 @@ java SchedulerSimulationSync
 ```
 
 **Results**: 
+```text
+           ALL PROCESSES COMPLETED
 ═══ Synchronization Statistics ═══
 Total Context Switches: 35
 Total Completed Processes: 17
@@ -327,6 +348,7 @@ P17        2            2282         62937
 
 ═══ Execution Log Summary ═══
 Total log entries: 70
+```
 
 **Why synchronization is necessary**: 
 Synchronization is necessary because shared resources such as contextSwitchCount, completedProcessCount, totalWaitingTime, and executionLog may be accessed by multiple threads at the same time. Without locks, counter updates may be lost. Without protecting the ArrayList, log entries may be corrupted or lost.
@@ -370,7 +392,7 @@ The final output confirms that all generated processes completed execution succe
 ---
 
 ### Test 4: Different Scenarios
-**Scenario tested**: [ Running the scheduler multiple times using the same student ID seed and observing process execution behavior.]
+**Scenario tested**: Running the scheduler multiple times using the same student ID seed and observing process execution behavior.
 
 **Purpose**: 
 The purpose was to verify that the scheduler behaves consistently and that synchronization protects shared resources correctly during concurrent execution.
@@ -411,7 +433,7 @@ Synchronization is similar to controlling access to a shared room. If many peopl
 
 ## Part 6: GitHub Repository Information
 
-**Repository URL**: https://github.com/Reema21415/OS-Assignment3-Reema-Alqahtani.git
+**Repository URL**: https://github.com/Reema21415/OS-Assignment3-Reema-Alqahtani
 
 **Number of commits**: 12
 
@@ -428,6 +450,7 @@ Synchronization is similar to controlling access to a shared room. If many peopl
 10. Release CPU semaphore after final process execution
 11. last update
 12. Complete ASSIGNMENT_DOCUMENTATION answers
+13. Finalize assignment submission
 
 ---
 
